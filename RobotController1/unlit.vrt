@@ -1,0 +1,27 @@
+#version 450 // -*- c++ -*-
+
+// Attributes
+in vec3            position;
+in vec2            texCoord;
+
+
+// Interpolated outputs
+out gData {
+    vec3            position;
+	vec2            texCoord;
+
+} vertex;
+
+// Uniforms
+layout(shared, row_major) uniform Uniform {
+    mat4x4      objectToWorldMatrix;
+    mat4x4      modelViewProjectionMatrix;
+    vec3        cameraPosition;
+} object;
+
+void main () {
+	vertex.texCoord     = texCoord;
+    vertex.position		= (object.objectToWorldMatrix * vec4(position, 1.0)).xyz;
+
+    gl_Position = object.modelViewProjectionMatrix * vec4(position, 1.0);
+}

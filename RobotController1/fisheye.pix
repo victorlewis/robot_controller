@@ -1,0 +1,46 @@
+#version 450 // -*- c++ -*-
+
+const float PI = 3.1415927;
+
+in gData {
+    vec3            position;
+	vec2            texCoord;
+} vertex;
+
+layout(shared, row_major) uniform Uniform {
+    mat4x4          objectToWorldMatrix;
+    mat4x4          modelViewProjectionMatrix;
+    vec3            cameraPosition;
+} object;
+
+uniform sampler2D   colorTexture;
+uniform int offset;
+
+out vec4            pixelColor;
+
+void main () {
+	vec2 textCoordXY = vertex.texCoord.rg;
+
+
+	//textCoordXY.y = 1.0 -textCoordXY.y;
+	//textCoordXY.x *= 0.5;
+	//textCoordXY.x += 0.5;
+
+	/*if (offset == 0) // LEFT EYE
+	{
+		textCoordXY.x *= 0.5;
+	}
+	else
+	{
+		textCoordXY.x += 0.5;
+	}*/
+
+
+	vec4 incolor = texture(colorTexture, textCoordXY);
+
+	//incolor.rgb = incolor.rgb*incolor.a;
+
+	//pixelColor = vec4(vertex.texCoord.x, vertex.texCoord.y, 0.5, 1.0);
+	pixelColor = incolor + vec4(0.0, 0.0, 0.0, 1.0);
+}
+

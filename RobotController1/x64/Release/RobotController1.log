@@ -1,0 +1,102 @@
+﻿Build started 5/19/2019 10:01:04 PM.
+     1>Project "C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\RobotController1.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"C:\gstreamer\1.0\x86_64\\include\gstreamer-1.0" /I"C:\gstreamer\1.0\x86_64\\include\glib-2.0" /I"C:\gstreamer\1.0\x86_64\\lib\glib-2.0\include" /IC:\gstreamer\1.0\x86_64\\include /I\inc\crt\ /I\inc\atl71\ /IC:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\openvr\headers /I"C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\glew-1.13.0\include" /I"C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\glfw-3.2.bin.WIN64\include" /IC:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\asio /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt main.cpp
+         main.cpp
+         Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+         - add -D_WIN32_WINNT=0x0501 to the compiler command line; or
+         - add _WIN32_WINNT=0x0501 to your project's Preprocessor Definitions.
+         Assuming _WIN32_WINNT=0x0501 (i.e. Windows XP target).
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\matrix.h(198): warning C4056: overflow in floating-point constant arithmetic
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\matrix.h(199): warning C4056: overflow in floating-point constant arithmetic
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\OpenGLutils.h(278): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\OpenGLutils.h(318): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\OpenGLutils.h(372): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(88): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(90): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(153): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(154): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(162): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(163): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(164): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(165): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(166): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(180): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(274): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(275): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(276): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(328): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(329): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(330): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(515): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(607): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(622): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(230) : see declaration of 'fscanf'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(632): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(230) : see declaration of 'fscanf'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(646): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(230) : see declaration of 'fscanf'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(658): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(230) : see declaration of 'fscanf'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(772): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(774): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(858): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(859): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(900): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(903): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(230) : see declaration of 'fscanf'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(932): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(933): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(934): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(958): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(211) : see declaration of 'fopen'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(961): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(230) : see declaration of 'fscanf'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(990): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(991): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(992): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1058): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1060): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1244): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1245): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1249): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1250): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1251): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1252): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1263): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1264): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1267): warning C4313: 'printf'  : '%i' in format string conflicts with argument 1 of type 'const char *'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1401): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1402): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1406): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1433): warning C4313: 'printf'  : '%i' in format string conflicts with argument 1 of type 'const char *'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1590): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1592): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1621): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1629): warning C4313: 'printf'  : '%i' in format string conflicts with argument 1 of type 'const char *'
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\gstreamer_functions.h(69): warning C4244: 'initializing' : conversion from 'gsize' to 'int', possible loss of data
+     1>main.cpp(162): warning C4305: '=' : truncation from 'double' to 'float'
+     1>main.cpp(163): warning C4305: '=' : truncation from 'double' to 'float'
+     1>main.cpp(168): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>main.cpp(173): warning C4305: '=' : truncation from 'double' to 'float'
+     1>main.cpp(174): warning C4305: '=' : truncation from 'double' to 'float'
+     1>main.cpp(179): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>main.cpp(216): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
+     1>main.cpp(217): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\x64\Release\RobotController1.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\gstreamer\1.0\x86_64\\lib /LIBPATH:C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\openvr\lib\win64 /LIBPATH:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\glfw-3.2.bin.WIN64\lib-vc2013" /LIBPATH:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\glew-1.13.0\lib\Release\x64" glew32.lib glfw3.lib openvr_api.lib "gstapp-1.0.lib" oldnames.lib msvcrt.lib "gstreamer-1.0.lib" "gobject-2.0.lib" "glib-2.0.lib" intl.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\x64\Release\RobotController1.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\x64\Release\RobotController1.lib" /MACHINE:X64 x64\Release\audiotest.obj
+         x64\Release\main.obj
+         x64\Release\Source.obj
+         Generating code
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\matrix.h(198): warning C4756: overflow in constant arithmetic
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\matrix.h(199): warning C4756: overflow in constant arithmetic
+     1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\matrix.h(198): warning C4756: overflow in constant arithmetic
+         Finished generating code
+         RobotController1.vcxproj -> C:\Users\Cameron\Documents\VirtualReality\RobotController1\x64\Release\RobotController1.exe
+     1>Done Building Project "C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\RobotController1.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.64
