@@ -11,7 +11,7 @@ Camera: Fixed relative to the head. The camera is the eye.
 // OR THEY WILL BE ACCESSIBLE AS PLAIN TEXT!
 
 // Uncomment to add VR support
-//#define _VR
+#define _VR
 
 ////////////////////////////////////////////////////////////////////////////////
 #define ASIO_STANDALONE 
@@ -179,9 +179,11 @@ int main(const int argc, const char* argv[]) {
 	float tempRightCoeffs[11] = { 991.300300, 586.381273, - 0.464130, 80.502435, 46.458477, - 1.106387, 17.021867, 20.604190, - 1.330144, - 6.559736, - 1.668794 };
 	for (int i = 0; i < rightCalibData.polysize; i++) rightCalibData.coeffs[i] = tempRightCoeffs[i];
 
-	//uvMeshGL eyeSpheres[2] = { generateUVSphereOcam(256, 128, rightCalibData, 0.5), generateUVSphereOcam(256, 128, leftCalibData, 0.0) };
+	uvMeshGL eyeSpheres[2] = { generateUVSphereOcam(256, 128, leftCalibData, 0.5), generateUVSphereOcam(256, 128, rightCalibData, 0.0) };
 
-	uvMeshGL eyeSpheres[2] = { generateQuad(), generateQuad() };
+	//uvMeshGL eyeSpheres[2] = { generateQuad(), generateQuad() };
+
+
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -374,6 +376,9 @@ int main(const int argc, const char* argv[]) {
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_A)) { to_send = "90," + std::to_string(int(speed)); }
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_D)) { to_send = "270," + std::to_string(int(speed)); }
 		if ((GLFW_PRESS == glfwGetKey(window, GLFW_KEY_SPACE)) || (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_Z))) { to_send = "0,0"; }
+
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_R)) { to_send = "0," + std::to_string(int(speed)); }
+
 
 		if (speed > 1000) speed = 1000;
 		if (speed < 0) speed = 0;

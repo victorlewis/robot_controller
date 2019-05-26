@@ -5,7 +5,7 @@ new_preroll(GstAppSink *appsink, gpointer data) {
 }
 
 GstFlowReturn
-new_sample(GstAppSink *appsink, gpointer data) {
+new_sample_left(GstAppSink *appsink, gpointer data) {
 	static int framecount = 0;
 	framecount++;
 
@@ -19,70 +19,49 @@ new_sample(GstAppSink *appsink, gpointer data) {
 	GstMapInfo map;
 	gst_buffer_map(buffer, &map, GST_MAP_READ);
 
-	// convert gstreamer data to OpenCV Mat, you could actually
-	// resolve height / width from caps...
-	//Mat frame(Size(320, 240), CV_8UC3, (char*)map.data, Mat::AUTO_STEP);
+	//unsigned char* dataBuffer = (unsigned char*)map.data;
+	//cell_image.pixel = dataBuffer;
 
-	unsigned char* dataBuffer = (unsigned char*)map.data;
-
-	cell_image.pixel = dataBuffer;
-
-	/*if (framecount == 60)
-	{
-		//This prevents the images getting padded 
-		// when the width multiplied by 3 is not a multiple of 4
-		int width = 320;
-		int height = 240;
-
-		int nSize = width*height;
-		// First let's create our buffer, 3 channels per Pixel
-		//unsigned char* dataBuffer = (unsigned char*)malloc(nSize*sizeof(unsigned char));
-		unsigned char* dataBuffer = (unsigned char*)map.data;
-		// We request the pixels in GL_BGR format, thanks to Berzeger for the tip
-
-		FILE *filePtr = fopen("test_output.tga", "wb");
-
-
-
-
-		unsigned char TGAheader[12] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		unsigned char header[6] = { width % 256, width / 256,
-			height % 256, height / 256,
-			24, 0 }; // 32 = 4*8 channels
-		// We write the headers
-		fwrite(TGAheader, sizeof(unsigned char), 12, filePtr);
-		fwrite(header, sizeof(unsigned char), 6, filePtr);
-		// And finally our image data
-		fwrite(dataBuffer, sizeof(unsigned char) * 3, nSize, filePtr);
-		fclose(filePtr);
-
-		//free(dataBuffer);
-
-		g_print("30th frame!");
-	}*/
-
-	int frameSize = map.size;
+	memcpy(cell_image.pixel, (unsigned char*)map.data, 2048 * 2048 * 4);
 
 	// TODO: synchronize this....
 	//frameQueue.push_back(frame);
 
 	gst_buffer_unmap(buffer, &map);
 
-	// ------------------------------------------------------------
+	gst_sample_unref(sample);
+	return GST_FLOW_OK;
+}
 
-	// print dot every 30 frames
-	if (framecount % 30 == 0) {
-		g_print(".");
-	}
+GstFlowReturn
+new_sample_right(GstAppSink *appsink, gpointer data) {
+	static int framecount = 0;
+	framecount++;
 
-	// show caps on first frame
-	if (framecount == 1) {
-		g_print("%s\n", gst_caps_to_string(caps));
-	}
+	GstSample *sample = gst_app_sink_pull_sample(appsink);
+	GstCaps *caps = gst_sample_get_caps(sample);
+	GstBuffer *buffer = gst_sample_get_buffer(sample);
+	const GstStructure *info = gst_sample_get_info(sample);
+
+	// ---- Read frame and convert to opencv format ---------------
+
+	GstMapInfo map;
+	gst_buffer_map(buffer, &map, GST_MAP_READ);
+
+	//unsigned char* dataBuffer = (unsigned char*)map.data;
+	//cell_image.pixel = dataBuffer;
+
+	memcpy(cell_image.pixel + 2048 * 2048 * 4, (unsigned char*)map.data, 2048 * 2048 * 4);
+
+	// TODO: synchronize this....
+	//frameQueue.push_back(frame);
+
+	gst_buffer_unmap(buffer, &map);
 
 	gst_sample_unref(sample);
 	return GST_FLOW_OK;
 }
+
 
 //pipeline = gst_parse_launch("rtspsrc location=rtsp://54.38.75.36:8554/test ! rtph264depay ! decodebin ! autovideosink", NULL);
 //pipeline = gst_parse_launch("rtspsrc location=rtsp://54.38.75.36:8554/test ! rtph264depay ! decodebin ! appsink name=sink sync=true", NULL);
@@ -94,11 +73,12 @@ new_sample(GstAppSink *appsink, gpointer data) {
 
 void gstreamer_main()
 {
-	int width = 4096;
-	int height = 2048;
+	int width = 2048;
+	int height = 4096;
 
 	cell_image.width = width;
 	cell_image.height = height;
+	cell_image.pixel = (uint8_t*)malloc(width*height*4);
 
 	//ucharImage cell_image_temp = stbLoadImage("cameron.jpg");
 	//ucharImage cell_image_rgba = ucharRGBtoRGBA(cell_image_temp);
@@ -150,13 +130,15 @@ void gstreamer_main()
 		mix. ! video/x-raw\"(memory:GLMemory)\",multiview-mode=side-by-side ! \
 		queue ! gldownload ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=4096,height=2048 ! videoconvert ! appsink name=sink sync=false";*/
 
-
-	const gchar* pipeline_text = "videotestsrc pattern=ball name=left \
-    videotestsrc name=right glstereomix name=mix \
-    left. ! video/x-raw,width=2048,height=2048 ! glupload ! mix.  \
-    right. ! video/x-raw,width=2048,height=2048 ! glupload ! mix.  \
-    mix. ! video/x-raw\"(memory:GLMemory)\",multiview-mode=side-by-side ! \
-    queue ! gldownload ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=4096,height=2048 ! videoconvert ! appsink name=sink sync=false";
+	const gchar* pipeline_text = "rtpbin name=rtpbin latency=20 \
+		udpsrc caps=\"application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264\" \
+		port=40322 ! rtpbin.recv_rtp_sink_1 \
+		rtpbin. ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw,format=RGBA,width=2048,height=2048 ! appsink name=sink \
+		udpsrc port=40323 ! rtpbin.recv_rtcp_sink_1 \
+		udpsrc caps=\"application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264\" \
+		port=40320 ! rtpbin.recv_rtp_sink_0 \
+		rtpbin. ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! video/x-raw,format=RGBA,width=2048,height=2048 ! appsink name=sink_right \
+		udpsrc port=40321 ! rtpbin.recv_rtcp_sink_0";
 
 	pipeline = gst_parse_launch(pipeline_text, NULL);
 
@@ -166,8 +148,17 @@ void gstreamer_main()
 	gst_app_sink_set_emit_signals((GstAppSink*)sink, true);
 	gst_app_sink_set_drop((GstAppSink*)sink, true);
 	gst_app_sink_set_max_buffers((GstAppSink*)sink, 1);
-	GstAppSinkCallbacks callbacks = { NULL, new_preroll, new_sample };
+	GstAppSinkCallbacks callbacks = { NULL, new_preroll, new_sample_left };
 	gst_app_sink_set_callbacks(GST_APP_SINK(sink), &callbacks, NULL, NULL);
+
+	GstElement *sink_right = gst_bin_get_by_name(GST_BIN(pipeline), "sink_right");
+
+	gst_app_sink_set_emit_signals((GstAppSink*)sink_right, true);
+	gst_app_sink_set_drop((GstAppSink*)sink_right, true);
+	gst_app_sink_set_max_buffers((GstAppSink*)sink_right, 1);
+	GstAppSinkCallbacks callbacks_right = { NULL, new_preroll, new_sample_right };
+	gst_app_sink_set_callbacks(GST_APP_SINK(sink_right), &callbacks_right, NULL, NULL);
+
 
 	// GET AUDIO SINK
 	//GstElement *audiosink = gst_bin_get_by_name(GST_BIN(pipeline), "audio");

@@ -21,8 +21,8 @@ out vec4            pixelColor;
 void main () {
 	vec2 textCoordXY = vertex.texCoord.rg;
 
-
-	//textCoordXY.y = 1.0 -textCoordXY.y;
+	textCoordXY.x = 1.0 -textCoordXY.x;
+	textCoordXY.y = 1.0 -textCoordXY.y;
 	//textCoordXY.x *= 0.5;
 	//textCoordXY.x += 0.5;
 
