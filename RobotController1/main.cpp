@@ -11,7 +11,7 @@ Camera: Fixed relative to the head. The camera is the eye.
 // OR THEY WILL BE ACCESSIBLE AS PLAIN TEXT!
 
 // Uncomment to add VR support
-#define _VR
+//#define _VR
 
 ////////////////////////////////////////////////////////////////////////////////
 #define ASIO_STANDALONE 
@@ -158,7 +158,7 @@ int main(const int argc, const char* argv[]) {
 	//float tempRightCoeffs[12] = { 605.790428, 300.173872, -25.630741, 59.753381, 13.066510, 3.343557, 19.851506, -11.427071, -13.822894, 12.982593, 13.931213, 3.207146 };
 	//for (int i = 0; i < rightCalibData.polysize; i++) rightCalibData.coeffs[i] = tempRightCoeffs[i];
 
-	OCamCalibData leftCalibData;
+	/*OCamCalibData leftCalibData;
 	leftCalibData.center_y = 1073.248894;
 	leftCalibData.center_x = 1077.740811;
 	leftCalibData.height = 2048;
@@ -177,8 +177,28 @@ int main(const int argc, const char* argv[]) {
 	rightCalibData.polysize = 11;
 	rightCalibData.coeffs = (float*)malloc(sizeof(float)*rightCalibData.polysize);
 	float tempRightCoeffs[11] = { 991.300300, 586.381273, - 0.464130, 80.502435, 46.458477, - 1.106387, 17.021867, 20.604190, - 1.330144, - 6.559736, - 1.668794 };
-	for (int i = 0; i < rightCalibData.polysize; i++) rightCalibData.coeffs[i] = tempRightCoeffs[i];
+	for (int i = 0; i < rightCalibData.polysize; i++) rightCalibData.coeffs[i] = tempRightCoeffs[i];*/
 
+	OCamCalibData leftCalibData;
+	leftCalibData.center_y = 442.876513;
+	leftCalibData.center_x = 652.818122;
+	leftCalibData.height = 960;
+	leftCalibData.width = 1280;
+	leftCalibData.polysize = 9;
+	leftCalibData.coeffs = (float*)malloc(sizeof(float)*leftCalibData.polysize);
+	float leftCalibCoeffs[9] = { 714.548586, 423.433640, 8.101962, 59.054346, 23.938875, - 17.463169, - 11.449815, 1.158872, 1.243106 };
+
+	for (int i = 0; i < leftCalibData.polysize; i++) leftCalibData.coeffs[i] = leftCalibCoeffs[i];
+
+	OCamCalibData rightCalibData;
+	rightCalibData.center_y = 444.986716;
+	rightCalibData.center_x = 658.122973;
+	rightCalibData.height = 960;
+	rightCalibData.width = 1280;
+	rightCalibData.polysize = 9;
+	rightCalibData.coeffs = (float*)malloc(sizeof(float)*rightCalibData.polysize);
+	float tempRightCoeffs[9] = { 716.309346, 420.575126, 5.441282, 59.448713, 21.625563, - 20.866173, - 12.239077, 1.658369, 1.432656 };
+	for (int i = 0; i < rightCalibData.polysize; i++) rightCalibData.coeffs[i] = tempRightCoeffs[i];
 	uvMeshGL eyeSpheres[2] = { generateUVSphereOcam(256, 128, leftCalibData, 0.5), generateUVSphereOcam(256, 128, rightCalibData, 0.0) };
 
 	//uvMeshGL eyeSpheres[2] = { generateQuad(), generateQuad() };

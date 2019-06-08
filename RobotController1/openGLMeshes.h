@@ -1618,8 +1618,8 @@ uvMeshGL generateUVSphereOcam(int rings, int segments, OCamCalibData calibData, 
 			float d = 0;
 			float e = 0;
 
-			output.uv[u++] = (uu*c + vv*d + u0) / calibData.width;
-			output.uv[u++] = (uu*e + vv + v0) / calibData.height * 0.5 + uvOffset;
+			output.uv[u++] = (uu*c + vv*d + u0) / calibData.width * 0.5 + uvOffset;
+			output.uv[u++] = (uu*e + vv + v0) / calibData.height ;
 
 			//output.uv[u++] = (uu*c + vv*d + u0) / calibData.width;
 			//output.uv[u++] = (uu*e + vv + v0) / calibData.height;
