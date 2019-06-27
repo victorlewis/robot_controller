@@ -11,7 +11,7 @@ Camera: Fixed relative to the head. The camera is the eye.
 // OR THEY WILL BE ACCESSIBLE AS PLAIN TEXT!
 
 // Uncomment to add VR support
-//#define _VR
+#define _VR
 
 ////////////////////////////////////////////////////////////////////////////////
 #define ASIO_STANDALONE 
@@ -36,7 +36,9 @@ Camera: Fixed relative to the head. The camera is the eye.
 #include "simple_io.h"
 
 // THE VIDEO FRAME
-ucharImage cell_image;
+//ucharImage cell_image;
+ucharImage left_frame;
+ucharImage right_frame;
 
 ////////////////////////////////////////////////////////////////////////////////
 // THE GSTREAMER LIBS
@@ -127,13 +129,19 @@ int main(const int argc, const char* argv[]) {
 	//printf("ping!\n"); // program doesn't execute without this... wtf
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 
 	standardShader unlit_shader("unlit.vrt", "fisheye.pix");
+	//standardShader unlit_shader("unlit.vrt", "unlit.pix");
 
 	const GLint unlit_positionAttribute = glGetAttribLocation(unlit_shader.shader, "position");
 	const GLint unlit_uvAttribute = glGetAttribLocation(unlit_shader.shader, "texCoord");
 	const GLint unlit_colorTextureUniform = glGetUniformLocation(unlit_shader.shader, "colorTexture");
+
+	// OFFSET FOR EYE EACH
+	const GLint offsetUniform = glGetUniformLocation(unlit_shader.shader, "offset");
+
+
 	printf("Ping!\n");
 
 	//uvMeshGL fullscreenQuad = generateQuad();
@@ -179,7 +187,7 @@ int main(const int argc, const char* argv[]) {
 	float tempRightCoeffs[11] = { 991.300300, 586.381273, - 0.464130, 80.502435, 46.458477, - 1.106387, 17.021867, 20.604190, - 1.330144, - 6.559736, - 1.668794 };
 	for (int i = 0; i < rightCalibData.polysize; i++) rightCalibData.coeffs[i] = tempRightCoeffs[i];*/
 
-	OCamCalibData leftCalibData;
+	/*OCamCalibData leftCalibData;
 	leftCalibData.center_y = 442.876513;
 	leftCalibData.center_x = 652.818122;
 	leftCalibData.height = 960;
@@ -198,8 +206,37 @@ int main(const int argc, const char* argv[]) {
 	rightCalibData.polysize = 9;
 	rightCalibData.coeffs = (float*)malloc(sizeof(float)*rightCalibData.polysize);
 	float tempRightCoeffs[9] = { 716.309346, 420.575126, 5.441282, 59.448713, 21.625563, - 20.866173, - 12.239077, 1.658369, 1.432656 };
+	for (int i = 0; i < rightCalibData.polysize; i++) rightCalibData.coeffs[i] = tempRightCoeffs[i];*/
+
+
+	// RASPBERRY PI
+	OCamCalibData leftCalibData;
+	leftCalibData.center_y = 494.681445;
+	leftCalibData.center_x = 664.415274;
+	leftCalibData.height = 972;
+	leftCalibData.width = 1296;
+	leftCalibData.polysize = 8;
+	leftCalibData.coeffs = (float*)malloc(sizeof(float)*leftCalibData.polysize);
+	float leftCalibCoeffs[8] = { 1052.060759, 586.391675, 104.245654, 257.643101, 28.973677, -166.089928, -111.538621, -22.087161 };
+
+	for (int i = 0; i < leftCalibData.polysize; i++) leftCalibData.coeffs[i] = leftCalibCoeffs[i];
+
+	OCamCalibData rightCalibData;
+	rightCalibData.center_y = 477.568177;
+	rightCalibData.center_x = 709.316843;
+	rightCalibData.height = 972;
+	rightCalibData.width = 1296;
+	rightCalibData.polysize = 7;
+	rightCalibData.coeffs = (float*)malloc(sizeof(float)*rightCalibData.polysize);
+	float tempRightCoeffs[7] = { 1090.864358, 681.185997, 235.434062, 468.691819, 352.456084, 124.482200, 17.270599 };
 	for (int i = 0; i < rightCalibData.polysize; i++) rightCalibData.coeffs[i] = tempRightCoeffs[i];
-	uvMeshGL eyeSpheres[2] = { generateUVSphereOcam(256, 128, leftCalibData, 0.5), generateUVSphereOcam(256, 128, rightCalibData, 0.0) };
+	uvMeshGL eyeSpheres[2] = { generateUVSphereOcam(1024, 512, leftCalibData, 0.5), generateUVSphereOcam(1024, 512, rightCalibData, 0.0) };
+
+	// 
+
+	eyeSpheres[0].genOpenGLBuffers();
+	eyeSpheres[1].genOpenGLBuffers();
+
 
 	//uvMeshGL eyeSpheres[2] = { generateQuad(), generateQuad() };
 
@@ -211,10 +248,14 @@ int main(const int argc, const char* argv[]) {
 
 	std::thread t1(gstreamer_main);
 
-	GLuint celltex;
-	glGenTextures(1, &celltex);
+	GLuint left_tex;
+	glGenTextures(1, &left_tex);
+
+	GLuint right_tex;
+	glGenTextures(1, &right_tex);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	bool eye_val = 0;
 
 #   ifdef _VR
 	vr::TrackedDevicePose_t trackedDevicePose[vr::k_unMaxTrackedDeviceCount];
@@ -245,7 +286,6 @@ int main(const int argc, const char* argv[]) {
 
 	double previousTime = glfwGetTime();
 	uint32_t speed = 256;
-
 	////////////////////////////////////////////////////////////////////////
 	while (!glfwWindowShouldClose(window)) {
 		assert(glGetError() == GL_NONE);
@@ -282,8 +322,11 @@ int main(const int argc, const char* argv[]) {
 
 
 		// GET THE VIDEO FRAME
-		glBindTexture(GL_TEXTURE_2D, celltex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, cell_image.width, cell_image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cell_image.pixel);
+		glBindTexture(GL_TEXTURE_2D, left_tex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, left_frame.width, left_frame.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, left_frame.pixel);
+
+		glBindTexture(GL_TEXTURE_2D, right_tex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, right_frame.width, right_frame.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, right_frame.pixel);
 
 		for (int eye = 0; eye < numEyes; ++eye)
 		{
@@ -325,12 +368,20 @@ int main(const int argc, const char* argv[]) {
 			glVertexAttribPointer(unlit_uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
 			glEnableVertexAttribArray(unlit_uvAttribute);
 
+			// OFFSET 
+			//if (eye == 0) glUniform1f(offsetUniform, 0.5); // in focus distance
+			//else glUniform1f(offsetUniform, 0.0);
+
 			// indexBuffer
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eyeSpheres[eye].indexBuffer);
 
-
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, celltex);
+			
+			if (eye == eye_val) glBindTexture(GL_TEXTURE_2D, right_tex);
+			else glBindTexture(GL_TEXTURE_2D, left_tex);
+
+			//glBindTexture(GL_TEXTURE_2D, right_tex);
+
 			glBindSampler(0, trilinearSampler);
 			glUniform1i(unlit_colorTextureUniform, 0);
 
@@ -365,7 +416,6 @@ int main(const int argc, const char* argv[]) {
 		vr::VRCompositor()->PostPresentHandoff();
 #       endif
 
-
 		// Mirror to the window
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GL_NONE);
 		glViewport(0, 0, windowWidth, windowHeight);
@@ -397,16 +447,18 @@ int main(const int argc, const char* argv[]) {
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_D)) { to_send = "270," + std::to_string(int(speed)); }
 		if ((GLFW_PRESS == glfwGetKey(window, GLFW_KEY_SPACE)) || (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_Z))) { to_send = "0,0"; }
 
-		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_R)) { to_send = "0," + std::to_string(int(speed)); }
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_T)) { to_send = "0," + std::to_string(int(speed)); }
 
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_F)) { eye_val = 1; }
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_V)) { eye_val = 0; }
 
 		if (speed > 1000) speed = 1000;
 		if (speed < 0) speed = 0;
 
 		nbFrames++;
 		if (currentTime - lastTime >= 0.2){ // If last printf() was more than 100ms ago
-			if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_R)) { speed += 32; printf("Speed: %i\n", speed); }
-			if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_F)) { speed -= 32; printf("Speed: %i\n", speed); }
+			if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_T)) { speed += 32; printf("Speed: %i\n", speed); }
+			if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_G)) { speed -= 32; printf("Speed: %i\n", speed); }
 
 			// printf and reset timer
 			//printf("%f ms/frame\n", 500 / double(nbFrames));
@@ -415,6 +467,10 @@ int main(const int argc, const char* argv[]) {
 
 			asio::write(socket, asio::buffer(to_send), error);
 		}
+
+#ifdef _VR
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_R)) { vr::VRSystem()->ResetSeatedZeroPose(); }
+#endif
 
 		// WASD keyboard movement
 		//double newTime = glfwGetTime();

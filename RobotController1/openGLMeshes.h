@@ -1593,8 +1593,8 @@ uvMeshGL generateUVSphereOcam(int rings, int segments, OCamCalibData calibData, 
 
 		if (dir_z < 0.0)
 		{
-			output.uv[u++] = 0.0;
-			output.uv[u++] = 0.0;
+			output.uv[u++] = -1.0;
+			output.uv[u++] = -1.0;
 		}
 		else {
 			//float length_dir = sqrt(dir_x*dir_x + dir_y*dir_y + dir_z*dir_z);
@@ -1618,17 +1618,295 @@ uvMeshGL generateUVSphereOcam(int rings, int segments, OCamCalibData calibData, 
 			float d = 0;
 			float e = 0;
 
-			output.uv[u++] = (uu*c + vv*d + u0) / calibData.width * 0.5 + uvOffset;
-			output.uv[u++] = (uu*e + vv + v0) / calibData.height ;
+			float texcoord_u = (uu*c + vv*d + u0) / calibData.width;
+			float texcoord_v = (uu*e + vv + v0) / calibData.height;
 
-			//output.uv[u++] = (uu*c + vv*d + u0) / calibData.width;
+			//output.uv[u++] = texcoord_u;
+			//output.uv[u++] = texcoord_v;
+
+
+			//if (texcoord_u >= 0.0 && texcoord_u <= 1.0
+			//	&& texcoord_v >= uvOffset && texcoord_v <= 0.5 + uvOffset)
+			//{
+				output.uv[u++] = texcoord_u;
+				output.uv[u++] = texcoord_v;
+			//}
+			//else
+			//{
+			//	output.uv[u++] = -1.0;
+			//	output.uv[u++] = -1.0;
+			//}
+		//	output.uv[u++] = (uu*c + vv*d + u0) / calibData.width;
 			//output.uv[u++] = (uu*e + vv + v0) / calibData.height;
+		}
+
+		// ROTATE AROUND THE ORIGIN
+		float t_dir_x = output.position[pos + 0];
+		float t_dir_y = output.position[pos + 1];
+		float t_dir_z = output.position[pos + 2];
+
+		if (uvOffset == 0)
+		{
+			output.position[pos + 0] = t_dir_y;
+			output.position[pos + 1] = -t_dir_x;
+			output.position[pos + 2] = t_dir_z;
+		}
+		else
+		{
+			output.position[pos + 0] = -t_dir_y;
+			output.position[pos + 1] = t_dir_x;
+			output.position[pos + 2] = t_dir_z;
+
 		}
 
 	}
 	printf("Num uvs: %i\n");
 
-	output.genOpenGLBuffers();
+	//output.genOpenGLBuffers();
+
+	return output;
+
+}
+
+
+uvMeshGL generateUVSphereOcamOverlapOnly(int rings, int segments, OCamCalibData calibData, OCamCalibData calibData_b, float uvOffset, float uvOffset_b)
+{
+	int in_num_vertices = segments * (rings - 1) + 2; int in_num_triangles = segments*rings * 2 - (segments * 2);
+	std::cout << "Num vertices: " << in_num_vertices << " and tris: " << in_num_triangles << std::endl;
+
+	uvMeshGL output(in_num_vertices, in_num_triangles);
+
+	int p = 0;
+	int vertexSize = sizeof(float) * 3;
+
+	// ADD THE BOTTOM VERTEX
+	output.position[p++] = 0;
+	output.position[p++] = 1.0f;
+	output.position[p++] = 0.0f;
+
+	// THERE ARE ACTUALLY rings-1 RINGS OF VERTICES.
+	// START AT 1, OR YOU WILL ADD THE TOP-VERTEX AGAIN
+	for (int r = 1; r < rings; r++)
+	{
+		float theta = ((float)(r) / (rings))*PI;
+
+		// NUMBER OF SEGMENTS IS JUST THE NUMBER OF VERTICES ON A RING
+		for (int s = 0; s < segments; s++)
+		{
+			float phi = ((float)(s) / segments) * 2 * PI; // azimuth goes around 0 .. 2*PI
+			//printf("lon is %f, lat if %f\n", lon, lat);
+			// OPENGL IS Y UP, Z FORWARD
+			float x = sin(theta)*cos(phi);
+			float z = sin(theta)*sin(phi);
+			float y = cos(theta);
+
+			//printf("x: %f, y: %f, z: %f\n", x, -z, y);
+
+			// TO-DO: CHECK CORRECTNESS OF THESE
+			output.position[p++] = x;
+			output.position[p++] = y;
+			output.position[p++] = z;
+		}
+	}
+
+	// ADD THE LAST, BOTTOM VERTEX
+	output.position[p++] = 0;
+	output.position[p++] = -1.0f;
+	output.position[p++] = 0;
+
+	//	for (int i = 0; i < in_num_vertices; i++)
+	//	{
+	//		printf("x: %f y: %f z: %f\n", output.position[i * 3 + 0], output.position[i * 3 + 1], output.position[i * 3 + 2]);
+	//	}
+	// GENERATE THE TRIANGLES
+
+	// Triangle fan at top
+	int t = 0;
+	int v1 = 0; int v2 = 1; int v3 = 2;
+	for (int i = 0; i < segments; i++)
+	{
+		output.triangles[t++] = v1;
+		output.triangles[t++] = v2;
+		output.triangles[t++] = v3;
+		v2++; v3++;
+		if (v3 > segments) v3 = 1;
+	}
+
+	//// RINGS
+	for (int r = 0; r < rings - 2; r++)
+	{
+		// V1 | V2
+		// V3 | V4
+
+		v1 = r*segments + 1;
+		v2 = r*segments + 1 + 1;
+		v3 = (r + 1)*segments + 1;
+		int v4 = (r + 1)*segments + 1 + 1;
+
+		for (int s = 0; s < segments; s++)
+		{
+			// UPPER TRIANGLE
+			output.triangles[t++] = v1;
+			output.triangles[t++] = v3;
+			output.triangles[t++] = v2;
+
+			// LOWER TRIANGLE
+			output.triangles[t++] = v2;
+			output.triangles[t++] = v3;
+			output.triangles[t++] = v4;
+
+			v1++; v2++; v3++; v4++;
+
+			if (v2 > r*segments + segments) v2 = r*segments + 1;
+			if (v4 > (r + 1)*segments + segments) v4 = (r + 1)*segments + 1;
+		}
+	}
+
+	// Triangle fan at the bottom
+	v1 = in_num_vertices - 1 - segments;
+	v2 = in_num_vertices - 1 - segments + 1;
+	v3 = in_num_vertices - 1;
+
+	for (int i = 0; i < segments; i++)
+	{
+		output.triangles[t++] = v1;
+		output.triangles[t++] = v2;
+		output.triangles[t++] = v3;
+		v1++; v2++;
+		if (v2 > in_num_vertices - 1 - 1) v2 = in_num_vertices - 1 - segments;
+	}
+
+	// GENERATE THE UV
+
+	/*float2 direction_to_equirectangular_range(float3 dir, float4 range)
+	{
+	if (is_zero(dir))
+	return make_float2(0.0f, 0.0f);
+
+	float u = (atan2f(dir.y, dir.x) - range.y) / range.x;
+	float v = (acosf(dir.z / len(dir)) - range.w) / range.z;
+
+	return make_float2(u, v);
+	}*/
+
+	int u = 0;
+
+	/*float coeffs[] = {12, 592.066480, 287.229079, -28.625608, 59.370156, 10.409210, 4.432917, 22.650670, -15.327758, -17.963767, 14.120643, 15.916149, 3.694360 };
+	int polysize = 13;
+
+	float center_y = 550.228185;
+	float center_x = 673.795866;
+	float affine_c = 0.998653;
+	float affine_d = -0.162848;
+	float affine_e = 0.159344;
+	float height = 960;
+	float width = 1280;*/
+
+	for (int v = 0; v < in_num_vertices; v++)
+	{
+		int pos = v * 3;
+		//float dir_x = output.position[pos + 0];
+		//float dir_y = output.position[pos + 1] *-1.0;
+
+		float dir_x = output.position[pos + 0] * -1.0;
+		float dir_y = output.position[pos + 1];
+		float dir_z = output.position[pos + 2] * -1.0;
+
+		if (dir_z < 0.0)
+		{
+			output.uv[u++] = -1.0;
+			output.uv[u++] = -1.0;
+		}
+		else {
+			//float length_dir = sqrt(dir_x*dir_x + dir_y*dir_y + dir_z*dir_z);
+
+			float norm = sqrt(dir_x*dir_x + dir_y*dir_y);
+			float theta = atan(-dir_z / norm);
+
+			float rho = 0.0;
+
+			//for (int i = 0; i > polysize; i++)
+			for (int i = calibData.polysize - 1; i >= 0; i--)
+				rho = rho * theta + calibData.coeffs[i];
+
+			float uu = dir_x / norm * rho;
+			float vv = dir_y / norm * rho;
+
+			float v0 = calibData.center_y;
+			float u0 = calibData.center_x;
+
+			float c = 1;
+			float d = 0;
+			float e = 0;
+
+			float texcoord_u = (uu*c + vv*d + u0) / calibData.width;
+			float texcoord_v = (uu*e + vv + v0) / calibData.height * 0.5 + uvOffset;
+
+			// GET THE OTHER SIDE
+			float norm_b = sqrt(dir_x*dir_x + dir_y*dir_y);
+			float theta_b = atan(-dir_z / norm_b);
+
+			float rho_b = 0.0;
+
+			//for (int i = 0; i > polysize; i++)
+			for (int i = calibData_b.polysize - 1; i >= 0; i--)
+				rho_b = rho_b * theta_b + calibData_b.coeffs[i];
+
+			float uu_b = dir_x / norm_b * rho_b;
+			float vv_b = dir_y / norm_b * rho_b;
+
+			float v0_b = calibData_b.center_y;
+			float u0_b = calibData_b.center_x;
+
+			float c_b = 1;
+			float d_b = 0;
+			float e_b = 0;
+
+			float texcoord_u_b = (uu_b*c_b + vv_b*d_b + u0_b) / calibData_b.width;
+			float texcoord_v_b = (uu_b*e_b + vv_b + v0_b) / calibData_b.height * 0.5 + uvOffset_b;
+
+			//if (texcoord_u >= 0.0 && texcoord_u <= 1.0
+			//	&& texcoord_v >= uvOffset && texcoord_v <= 0.5 + uvOffset
+			//	// THE OTHER SIDE
+			//	&& texcoord_u_b >= 0.0 && texcoord_u_b <= 1.0
+			//	&& texcoord_v_b >= uvOffset_b && texcoord_v_b <= 0.5 + uvOffset_b
+			//	)
+			//{
+				output.uv[u++] = texcoord_u;
+				output.uv[u++] = texcoord_v;
+			//}
+			/*else
+			{
+				output.uv[u++] = -1.0;
+				output.uv[u++] = -1.0;
+			}*/
+			//	output.uv[u++] = (uu*c + vv*d + u0) / calibData.width;
+			//output.uv[u++] = (uu*e + vv + v0) / calibData.height;
+		}
+
+		// ROTATE AROUND THE ORIGIN
+		float t_dir_x = output.position[pos + 0];
+		float t_dir_y = output.position[pos + 1];
+		float t_dir_z = output.position[pos + 2];
+
+		if (uvOffset == 0)
+		{
+			output.position[pos + 0] = t_dir_y;
+			output.position[pos + 1] = -t_dir_x;
+			output.position[pos + 2] = t_dir_z;
+		}
+		else
+		{
+			output.position[pos + 0] = -t_dir_y;
+			output.position[pos + 1] = t_dir_x;
+			output.position[pos + 2] = t_dir_z;
+
+		}
+
+	}
+	printf("Num uvs: %i\n");
+
+	//output.genOpenGLBuffers();
 
 	return output;
 

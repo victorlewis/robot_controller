@@ -14,17 +14,23 @@ layout(shared, row_major) uniform Uniform {
 } object;
 
 uniform sampler2D   colorTexture;
-uniform int offset;
+uniform float offset;
 
 out vec4            pixelColor;
 
 void main () {
-	vec2 textCoordXY = vertex.texCoord.rg;
+	vec2 textCoordXY_temp = vertex.texCoord.rg;
 
-	//textCoordXY.x = 1.0 -textCoordXY.x;
-	//textCoordXY.y = 1.0 -textCoordXY.y;
-	//textCoordXY.x *= 0.5;
-	//textCoordXY.x += 0.5;
+	//textCoordXY_temp.x = 1.0 -textCoordXY_temp.x;
+	//textCoordXY_temp.y = 1.0 -textCoordXY_temp.y;
+
+	// PUT THEM IN 0.5, 0.5 FOR ROTATION
+	//textCoordXY_temp -= 1.0;
+	//textCoordXY_temp *= 2.0;
+
+	vec2 textCoordXY = vec2(textCoordXY_temp.x,textCoordXY_temp.y);
+
+
 
 	/*if (offset == 0) // LEFT EYE
 	{
@@ -34,13 +40,26 @@ void main () {
 	{
 		textCoordXY.x += 0.5;
 	}*/
-
+	
 
 	vec4 incolor = texture(colorTexture, textCoordXY);
+	
+	pixelColor = vec4(0.0, 0.0 ,0.0,0.0);
+
+
+
+	if (textCoordXY.x >= 0.0 && textCoordXY.x <= 1.0
+	&& textCoordXY.y >= 0.0 && textCoordXY.y <=1.0)
+	{
+		pixelColor = incolor + vec4(0.0, 0.0, 0.0, 1.0);
+		pixelColor *=0.8;
+		pixelColor +=0.05;
+	}
+
+
 
 	//incolor.rgb = incolor.rgb*incolor.a;
 
 	//pixelColor = vec4(vertex.texCoord.x, vertex.texCoord.y, 0.5, 1.0);
-	pixelColor = incolor + vec4(0.0, 0.0, 0.0, 1.0);
 }
 
