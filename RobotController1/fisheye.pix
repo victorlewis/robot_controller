@@ -52,11 +52,30 @@ void main () {
 	&& textCoordXY.y >= 0.0 && textCoordXY.y <=1.0)
 	{
 		pixelColor = incolor + vec4(0.0, 0.0, 0.0, 1.0);
+		//pixelColor = vec4(0.6, 0.4, 0.8, 1.0);
+
 		pixelColor *=0.8;
 		pixelColor +=0.05;
 	}
 
+	// IF NEAR EDGE, APPLY GRADIENT!
+	/*float gradient_start = 0.46;
 
+	// CALCULATE HOW FAR FROM THE CENTRE YOU ARE
+	float distance = distance(vec2(0.5,0.5), textCoordXY);
+
+	if (distance > gradient_start)
+	{
+		float max_diff = 0.5 - gradient_start;
+		float diff = 0.5 - distance;
+
+		float gradientStrength = diff / max_diff;
+		pixelColor *= vec4(gradientStrength, gradientStrength, gradientStrength, 1.0);
+	}
+	*/
+
+
+	//pixelColor.a = 0.0;
 
 	//incolor.rgb = incolor.rgb*incolor.a;
 

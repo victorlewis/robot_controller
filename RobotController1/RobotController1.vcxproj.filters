@@ -69,5 +69,8 @@
     <None Include="fisheye.pix">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="alpha_mask.pix">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -162,6 +162,7 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="alpha_mask.pix" />
     <None Include="fisheye.pix" />
     <None Include="unlit.pix" />
     <None Include="unlit.vrt" />

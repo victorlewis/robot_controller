@@ -1,0 +1,31 @@
+#version 450 // -*- c++ -*-
+
+const float PI = 3.1415927;
+
+in gData {
+    vec3            position;
+	vec2            texCoord;
+} vertex;
+
+layout(shared, row_major) uniform Uniform {
+    mat4x4          objectToWorldMatrix;
+    mat4x4          modelViewProjectionMatrix;
+    vec3            cameraPosition;
+} object;
+
+uniform sampler2D   colorTexture;
+
+out vec4            pixelColor;
+
+void main () {
+	vec2 textCoordXY = vertex.texCoord.rg;
+	
+	pixelColor = vec4(0.0, 0.0 ,0.0,1.0);
+
+	if (textCoordXY.x >= 0.0 && textCoordXY.x <= 1.0
+	&& textCoordXY.y >= 0.0 && textCoordXY.y <=1.0)
+	{
+		pixelColor = vec4(0.0,0.0,0.0, 0.0);
+	}
+}
+

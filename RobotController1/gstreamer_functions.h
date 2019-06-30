@@ -72,6 +72,11 @@ new_sample_right(GstAppSink *appsink, gpointer data) {
 //	pipeline = gst_parse_launch("udpsrc port=12008 ! application/x-rtp,encoding-name=JPEG ! rtpjitterbuffer ! rtpjpegdepay ! jpegdec ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=1280,height=480 ! videoflip method=rotate-180 ! appsink name=sink", NULL);
 // 	pipeline = gst_parse_launch("udpsrc port=12008 ! application/x-rtp,encoding-name=JPEG ! rtpjitterbuffer ! rtpjpegdepay ! jpegdec ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=1280,height=480 ! appsink name=sink", NULL);
 
+void streamAudio()
+{
+
+}
+
 void gstreamer_main()
 {
 	int width = 1296;
