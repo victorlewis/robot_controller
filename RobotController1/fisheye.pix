@@ -19,34 +19,10 @@ uniform float offset;
 out vec4            pixelColor;
 
 void main () {
-	vec2 textCoordXY_temp = vertex.texCoord.rg;
-
-	//textCoordXY_temp.x = 1.0 -textCoordXY_temp.x;
-	//textCoordXY_temp.y = 1.0 -textCoordXY_temp.y;
-
-	// PUT THEM IN 0.5, 0.5 FOR ROTATION
-	//textCoordXY_temp -= 1.0;
-	//textCoordXY_temp *= 2.0;
-
-	vec2 textCoordXY = vec2(textCoordXY_temp.x,textCoordXY_temp.y);
-
-
-
-	/*if (offset == 0) // LEFT EYE
-	{
-		textCoordXY.x *= 0.5;
-	}
-	else
-	{
-		textCoordXY.x += 0.5;
-	}*/
-	
+	vec2 textCoordXY = vertex.texCoord.rg;
 
 	vec4 incolor = texture(colorTexture, textCoordXY);
-	
 	pixelColor = vec4(0.0, 0.0 ,0.0,0.0);
-
-
 
 	if (textCoordXY.x >= 0.0 && textCoordXY.x <= 1.0
 	&& textCoordXY.y >= 0.0 && textCoordXY.y <=1.0)
@@ -57,28 +33,5 @@ void main () {
 		pixelColor *=0.8;
 		pixelColor +=0.05;
 	}
-
-	// IF NEAR EDGE, APPLY GRADIENT!
-	/*float gradient_start = 0.46;
-
-	// CALCULATE HOW FAR FROM THE CENTRE YOU ARE
-	float distance = distance(vec2(0.5,0.5), textCoordXY);
-
-	if (distance > gradient_start)
-	{
-		float max_diff = 0.5 - gradient_start;
-		float diff = 0.5 - distance;
-
-		float gradientStrength = diff / max_diff;
-		pixelColor *= vec4(gradientStrength, gradientStrength, gradientStrength, 1.0);
-	}
-	*/
-
-
-	//pixelColor.a = 0.0;
-
-	//incolor.rgb = incolor.rgb*incolor.a;
-
-	//pixelColor = vec4(vertex.texCoord.x, vertex.texCoord.y, 0.5, 1.0);
 }
 

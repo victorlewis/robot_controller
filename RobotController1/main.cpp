@@ -11,7 +11,7 @@ Camera: Fixed relative to the head. The camera is the eye.
 // OR THEY WILL BE ACCESSIBLE AS PLAIN TEXT!
 
 // Uncomment to add VR support
-#define _VR
+//#define _VR
 
 ////////////////////////////////////////////////////////////////////////////////
 #define ASIO_STANDALONE 
@@ -39,6 +39,7 @@ Camera: Fixed relative to the head. The camera is the eye.
 //ucharImage cell_image;
 ucharImage left_frame;
 ucharImage right_frame;
+GLFWwindow* window = nullptr;
 
 ////////////////////////////////////////////////////////////////////////////////
 // THE GSTREAMER LIBS
@@ -52,7 +53,6 @@ extern "C" {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-GLFWwindow* window = nullptr;
 
 #ifdef _VR
 vr::IVRSystem* hmd = nullptr;
@@ -100,7 +100,7 @@ int main(const int argc, const char* argv[]) {
 	//Vector3 bodyTranslation(-0.15, -0.113, 3.0);
 	Vector3 bodyTranslation(0.0f, 0.0f, 0.0f);
 
-	Vector3 bodyRotation;
+	Vector3 bodyRotation(0.0f, 0.0f, 0.0f);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -116,23 +116,8 @@ int main(const int argc, const char* argv[]) {
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// Load the cell texture
-	//ucharImage cell_image = stbLoadImage("cameron.jpg");
-
-	//ucharImage cell_image_rgba = ucharRGBtoRGBA(cell_image);
-
-	//GLuint celltex;
-	//glGenTextures(1, &celltex);
-	//glBindTexture(GL_TEXTURE_2D, celltex);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, loaded_splashscreen.width, loaded_splashscreen.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, loaded_splashscreen.pixel);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, cell_image_rgba.width, cell_image_rgba.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cell_image_rgba.pixel);
-	//printf("ping!\n"); // program doesn't execute without this... wtf
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 	standardShader unlit_shader("unlit.vrt", "fisheye.pix");
-	//standardShader unlit_shader("unlit.vrt", "unlit.pix");
+	//standardShader unlit_shader("unlit.vrt", "sbs.pix");
 
 	const GLint unlit_positionAttribute = glGetAttribLocation(unlit_shader.shader, "position");
 	const GLint unlit_uvAttribute = glGetAttribLocation(unlit_shader.shader, "texCoord");
@@ -140,11 +125,6 @@ int main(const int argc, const char* argv[]) {
 
 	// OFFSET FOR EYE EACH
 	const GLint offsetUniform = glGetUniformLocation(unlit_shader.shader, "offset");
-
-	// MASK SHADER
-	standardShader mask_shader("unlit.vrt", "alpha_mask.pix");
-	const GLint mask_positionAttribute = glGetAttribLocation(mask_shader.shader, "position");
-	const GLint mask_uvAttribute = glGetAttribLocation(mask_shader.shader, "texCoord");
 
 	// RASPBERRY PI
 	OCamCalibData leftCalibData;
@@ -168,6 +148,7 @@ int main(const int argc, const char* argv[]) {
 	float tempRightCoeffs[7] = { 1090.864358, 681.185997, 235.434062, 468.691819, 352.456084, 124.482200, 17.270599 };
 	for (int i = 0; i < rightCalibData.polysize; i++) rightCalibData.coeffs[i] = tempRightCoeffs[i];
 	uvMeshGL eyeSpheres[2] = { generateUVSphereOcam(1024, 512, leftCalibData, 0.5), generateUVSphereOcam(1024, 512, rightCalibData, 0.0) };
+//	uvMeshGL eyeSpheres[2] = { generateUVSphereOcam(1024, 512, rightCalibData, 0.5), generateUVSphereOcam(1024, 512, leftCalibData, 0.0) };
 
 	// 
 
@@ -177,13 +158,12 @@ int main(const int argc, const char* argv[]) {
 
 	//uvMeshGL eyeSpheres[2] = { generateQuad(), generateQuad() };
 
-
-
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	printf("Starting Gstreamer!\n");
 
 	std::thread t1(gstreamer_main);
+	std::thread t2(streamAudio);
 
 	GLuint left_tex;
 	glGenTextures(1, &left_tex);
@@ -223,6 +203,9 @@ int main(const int argc, const char* argv[]) {
 
 	double previousTime = glfwGetTime();
 	uint32_t speed = 256;
+
+	bool M_LAST_STATE = FALSE;
+
 	////////////////////////////////////////////////////////////////////////
 	while (!glfwWindowShouldClose(window)) {
 		assert(glGetError() == GL_NONE);
@@ -332,55 +315,6 @@ int main(const int argc, const char* argv[]) {
 			}
 
 			glDrawElements(GL_TRIANGLES, eyeSpheres[eye].num_indices, GL_UNSIGNED_INT, 0);
-			
-
-			////////////////////////////////////////////////////////////////////////
-
-			// RENDER THE MASK
-			//glEnable(GL_DEPTH_TEST);s
-			//	glDepthFunc(GL_LESS);
-
-
-			// other eye
-			int other_eye = 0;
-			if (eye == 0) other_eye = 1;
-
-			//glCullFace(GL_FRONT);
-
-			glUseProgram(mask_shader.shader);
-
-			// in position
-			glBindBuffer(GL_ARRAY_BUFFER, eyeSpheres[other_eye].positionBuffer);
-			glVertexAttribPointer(mask_positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
-			glEnableVertexAttribArray(mask_positionAttribute);
-
-			// in uv
-			glBindBuffer(GL_ARRAY_BUFFER, eyeSpheres[other_eye].uvBuffer);
-			glVertexAttribPointer(mask_uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-			glEnableVertexAttribArray(mask_uvAttribute);
-
-			// indexBuffer
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eyeSpheres[other_eye].indexBuffer);
-
-			//glBindTexture(GL_TEXTURE_2D, right_tex);
-
-			glBindSampler(0, trilinearSampler);
-
-			// Other uniforms in the interface block
-			{
-				glBindBufferBase(GL_UNIFORM_BUFFER, mask_shader.uniformBindingPoint, mask_shader.uniformBlock);
-
-				GLubyte* ptr = (GLubyte*)glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-				memcpy(ptr + mask_shader.uniformOffset[0], objectToWorldMatrix.data, sizeof(objectToWorldMatrix));
-
-				memcpy(ptr + mask_shader.uniformOffset[1], modelViewProjectionMatrix.data, sizeof(modelViewProjectionMatrix));
-				memcpy(ptr + mask_shader.uniformOffset[2], &cameraPosition.x, sizeof(Vector3));
-				glUnmapBuffer(GL_UNIFORM_BUFFER);
-			}
-
-			glDrawElements(GL_TRIANGLES, eyeSpheres[other_eye].num_indices, GL_UNSIGNED_INT, 0);
-			////////////////////////////////////////////////////////////////////////
-
 
 #           ifdef _VR
 			{
@@ -418,22 +352,46 @@ int main(const int argc, const char* argv[]) {
 		}
 
 		// HANDLE THE ROBOT WASD MOVEMENT
-		std::string to_send = "0,0";
+		std::string to_send = "0,0,0";
 
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_ESCAPE)) {
 			glfwSetWindowShouldClose(window, 1);
 		}
 
-		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_W)) { to_send = "0," + std::to_string(int(speed)); }
-		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_S)) { to_send = "180," + std::to_string(int(speed)); }
-		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_A)) { to_send = "90," + std::to_string(int(speed)); }
-		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_D)) { to_send = "270," + std::to_string(int(speed)); }
-		if ((GLFW_PRESS == glfwGetKey(window, GLFW_KEY_SPACE)) || (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_Z))) { to_send = "0,0"; }
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_W)) { to_send = "0,0," + std::to_string(int(speed)); }
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_S)) { to_send = "0,180," + std::to_string(int(speed)); }
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_A)) { to_send = "0,90," + std::to_string(int(speed)); }
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_D)) { to_send = "0,270," + std::to_string(int(speed)); }
+		if ((GLFW_PRESS == glfwGetKey(window, GLFW_KEY_SPACE)) || (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_Z))) { to_send = "0,0,0"; }
 
-		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_T)) { to_send = "0," + std::to_string(int(speed)); }
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_T)) { to_send = "0,0," + std::to_string(int(speed)); }
+
+		// MIC KEY
+
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_M)) {
+			if (M_LAST_STATE == FALSE)
+			{
+				std::string audio_send = "255,0";
+
+				asio::write(socket, asio::buffer(audio_send), error);
+				M_LAST_STATE = TRUE;
+			}
+		}
+
+		if (GLFW_RELEASE == glfwGetKey(window, GLFW_KEY_M)) {
+			if (M_LAST_STATE == TRUE)
+			{
+				std::string audio_send = "255,1";
+
+				asio::write(socket, asio::buffer(audio_send), error);
+				M_LAST_STATE = FALSE;
+			}
+		}
 
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_F)) { eye_val = 1; }
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_V)) { eye_val = 0; }
+
+
 
 		if (speed > 1000) speed = 1000;
 		if (speed < 0) speed = 0;
@@ -480,8 +438,12 @@ int main(const int argc, const char* argv[]) {
 		// Keep the camera above the ground
 		//if (bodyTranslation.y < -2.0f) { bodyTranslation.y = -2.0f; }
 
+
+
 		static bool inDrag = false;
 		const float cameraTurnSpeed = 0.005f;
+
+
 		if (GLFW_PRESS == glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT)) {
 			static double startX, startY;
 			double currentX, currentY;

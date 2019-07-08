@@ -72,5 +72,8 @@
     <None Include="alpha_mask.pix">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="sbs.pix">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

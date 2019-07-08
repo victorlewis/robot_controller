@@ -164,6 +164,7 @@
   <ItemGroup>
     <None Include="alpha_mask.pix" />
     <None Include="fisheye.pix" />
+    <None Include="sbs.pix" />
     <None Include="unlit.pix" />
     <None Include="unlit.vrt" />
   </ItemGroup>

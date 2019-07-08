@@ -22,11 +22,6 @@ new_sample_left(GstAppSink *appsink, gpointer data) {
 	unsigned char* dataBuffer = (unsigned char*)map.data;
 	left_frame.pixel = dataBuffer;
 
-	//memcpy(left_frame.pixel, (unsigned char*)map.data, 1296 * 972 * 4);
-
-	// TODO: synchronize this....
-	//frameQueue.push_back(frame);
-
 	gst_buffer_unmap(buffer, &map);
 
 	gst_sample_unref(sample);
@@ -51,31 +46,39 @@ new_sample_right(GstAppSink *appsink, gpointer data) {
 	unsigned char* dataBuffer = (unsigned char*)map.data;
 	right_frame.pixel = dataBuffer;
 
-	//memcpy(right_frame.pixel + 1296 * 972 * 4, (unsigned char*)map.data, 1296 * 972 * 4);
-	//memcpy(right_frame.pixel, (unsigned char*)map.data, 1296 * 972 * 4);
-
-	// TODO: synchronize this....
-	//frameQueue.push_back(frame);
-
 	gst_buffer_unmap(buffer, &map);
 
 	gst_sample_unref(sample);
 	return GST_FLOW_OK;
 }
 
-
-//pipeline = gst_parse_launch("rtspsrc location=rtsp://54.38.75.36:8554/test ! rtph264depay ! decodebin ! autovideosink", NULL);
-//pipeline = gst_parse_launch("rtspsrc location=rtsp://54.38.75.36:8554/test ! rtph264depay ! decodebin ! appsink name=sink sync=true", NULL);
-//pipeline = gst_parse_launch("rtspsrc location=rtsp://54.38.75.36:8554/test ! rtph264depay ! decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=320,height=240 ! appsink name=sink sync=true", NULL);
-
-//pipeline = gst_parse_launch("videotestsrc ! video/x-raw,format=RGBA ! videoconvert ! appsink name=sink sync=true", NULL);
-//	pipeline = gst_parse_launch("udpsrc port=12008 ! application/x-rtp,encoding-name=JPEG ! rtpjitterbuffer ! rtpjpegdepay ! jpegdec ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=1280,height=480 ! videoflip method=rotate-180 ! appsink name=sink", NULL);
-// 	pipeline = gst_parse_launch("udpsrc port=12008 ! application/x-rtp,encoding-name=JPEG ! rtpjitterbuffer ! rtpjpegdepay ! jpegdec ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=1280,height=480 ! appsink name=sink", NULL);
-
 void streamAudio()
 {
+	GstElement *pipeline;
+	GstBus *bus;
+	GstMessage *msg;
 
+	/* Initialize GStreamer */
+	gst_init(NULL, NULL);
+
+	const gchar* pipeline_text = "directsoundsrc ! audioconvert ! opusenc ! rtpopuspay ! udpsink host=206.189.30.103 port=40520";
+
+	pipeline = gst_parse_launch(pipeline_text, NULL);
+
+	gst_element_set_state(pipeline, GST_STATE_PLAYING);
+
+	/* Wait until error or EOS */
+	bus = gst_element_get_bus(pipeline);
+	msg = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE, (GstMessageType)(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
+
+	/* Free resources */
+	if (msg != NULL)
+		gst_message_unref(msg);
+	gst_object_unref(bus);
+	gst_element_set_state(pipeline, GST_STATE_NULL);
+	gst_object_unref(pipeline);
 }
+
 
 void gstreamer_main()
 {
@@ -84,16 +87,9 @@ void gstreamer_main()
 
 	left_frame.width = width;
 	left_frame.height = height;
-	//left_frame.pixel = (uint8_t*)malloc(width*height * 4);
 
 	right_frame.width = width;
 	right_frame.height = height;
-	//right_frame.pixel = (uint8_t*)malloc(width*height * 4);
-
-
-	//ucharImage cell_image_temp = stbLoadImage("cameron.jpg");
-	//ucharImage cell_image_rgba = ucharRGBtoRGBA(cell_image_temp);
-	//cell_image = cell_image_rgba;
 
 	GstElement *pipeline;
 	GstBus *bus;
@@ -103,45 +99,7 @@ void gstreamer_main()
 	gst_init(NULL, NULL);
 
 	/* Build the pipeline */
-
-
-	/*const gchar* pipeline_text = "rtpbin name=rtpbin rtcp-sync-send-time=false \
-	udpsrc caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)44100, encoding-name=(string)MPEG4-GENERIC, encoding-params=(string)1, streamtype=(string)5, profile-level-id=(string)2, mode=(string)AAC-hbr, config=(string)120856e500, sizelength=(string)13\" \
-	port=40002 ! rtpbin.recv_rtp_sink_1 \
-	rtpbin. ! rtpmp4gdepay ! avdec_aac ! autoaudiosink \
-	udpsrc port=40003 ! rtpbin.recv_rtcp_sink_1 \
-	udpsrc caps=\"application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)JPEG\" \
-	port=40000 ! rtpbin.recv_rtp_sink_0 \ rtpbin. ! rtpjpegdepay ! queue ! jpegdec ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=640,height=240 ! appsink name=sink \
-	udpsrc port=40001 ! rtpbin.recv_rtcp_sink_0";*/
-
-	/*const gchar* pipeline_text = "udpsrc port=40000 ! application/x-rtp,encoding-name=JPEG ! rtpjitterbuffer ! rtpjpegdepay ! jpegdec ! videoconvert ! \
-	videoscale ! video/x-raw,format=RGBA,width=2560,height=960 ! appsink name=sink";*/
-
-	/*const gchar* pipeline_text = "udpsrc port=40320 ! application/x-rtp ! rtpjitterbuffer latency=100 ! rtph264depay ! avdec_h264 ! videoconvert ! \
-	videoscale ! video/x-raw,format=RGBA,width=2048,height=2048 ! appsink name=sink";*/
-
-	/*const gchar* pipeline_text = "rtpbin name=rtpbin rtcp-sync-send-time=false latency=13 \
-	udpsrc caps = \"application/x-rtp, media=(string)audio, clock-rate=(int)44100, encoding-name=(string)MPEG4-GENERIC, encoding-params=(string)1, streamtype=(string)5, profile-level-id=(string)2, mode=(string)AAC-hbr, config=(string)120856e500, sizelength=(string)13\" \
-	port=40322 ! rtpbin.recv_rtp_sink_1 \
-	rtpbin. ! rtpmp4gdepay ! avdec_aac ! audioconvert ! volume volume=10 ! directsoundsink \
-	udpsrc port=40323 ! rtpbin.recv_rtcp_sink_1 \
-	udpsrc caps=\"application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264\" \
-	port=40320 ! rtpbin.recv_rtp_sink_0 \ rtpbin. ! rtph264depay ! avdec_h264 ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=2560,height=960 ! appsink name=sink sync=false \
-	udpsrc port=40321 ! rtpbin.recv_rtcp_sink_0";*/
-
-	/*const gchar* pipeline_text = "rtpbin name=rtpbin glstereomix name=mix \
-	udpsrc caps=\"application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264\" \
-	port=40322 ! rtpbin.recv_rtp_sink_1 \
-	rtpbin. ! rtph264depay ! avdec_h264 ! videoconvert ! glupload ! mix. \
-	udpsrc port=40323 ! rtpbin.recv_rtcp_sink_1 \
-	udpsrc caps=\"application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264\" \
-	port=40320 ! rtpbin.recv_rtp_sink_0 \
-	rtpbin. ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! glupload ! mix. \
-	udpsrc port=40321 ! rtpbin.recv_rtcp_sink_0 \
-	mix. ! video/x-raw\"(memory:GLMemory)\",multiview-mode=side-by-side ! \
-	queue ! gldownload ! videoconvert ! videoscale ! video/x-raw,format=RGBA,width=4096,height=2048 ! videoconvert ! appsink name=sink sync=false";*/
-
-	const gchar* pipeline_text = "rtpbin name=rtpbin latency=80 \
+	const gchar* pipeline_text_nosound = "rtpbin name=rtpbin latency=80 \
 								 udpsrc caps=\"application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264\" \
 									port=40322 ! rtpbin.recv_rtp_sink_0 \
 									rtpbin. ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! video/x-raw,format=RGBA,width=1296,height=972 ! appsink name=left \
@@ -151,13 +109,30 @@ void gstreamer_main()
 									rtpbin. ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw,format=RGBA,width=1296,height=972 ! appsink name=sink_right \
 									udpsrc port=40321 ! rtpbin.recv_rtcp_sink_1";
 
+	const gchar* pipeline_text = "rtpbin name=rtpbin latency=80 \
+								udpsrc caps = \"application/x-rtp, media=(string)audio, clock-rate=(int)48000, encoding-name=(string)X-GST-OPUS-DRAFT-SPITTKA-00,\
+									payload=(int)96, ssrc=(uint)4254872613,timestamp-offset=(uint)2083197838,seqnum-offset=(uint)11401\" \
+									port=40420 ! rtpbin.recv_rtp_sink_2 \
+									rtpbin. ! rtpopusdepay ! avdec_opus ! audioconvert ! volume volume=5 ! directsoundsink \
+									udpsrc port=40421 ! rtpbin.recv_rtcp_sink_2 \
+								udpsrc caps=\"application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264\" \
+									port=40322 ! rtpbin.recv_rtp_sink_0 \
+									rtpbin. ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! video/x-raw,format=RGBA,width=1296,height=972 ! appsink name=left \
+								udpsrc port=40323 ! rtpbin.recv_rtcp_sink_0 \
+								udpsrc caps=\"application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264\" \
+									port=40320 ! rtpbin.recv_rtp_sink_1 \
+									rtpbin. ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw,format=RGBA,width=1296,height=972 ! appsink name=sink_right \
+								udpsrc port=40321 ! rtpbin.recv_rtcp_sink_1";
+
+	const gchar* rtsp_pipeline = "rtspsrc location=\"rtsp://206.189.30.103:8554/test\" latency=50 name=demux \
+					demux. ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! video/x-raw,format=RGBA,width=1296,height=972 ! appsink name=left \
+					demux. ! rtph264depay ! queue ! avdec_h264 ! videoconvert ! video/x-raw,format=RGBA,width=1296,height=972 ! appsink name=sink_right \
+					demux. ! rtpopusdepay ! avdec_opus ! audioconvert ! volume volume=5 ! directsoundsink";
+
+
 	// YOU WILL HAVE TO DYNAMICALLY BUILD THE PIPELINE, FIND OUT THE DYNAMIC SESSION NUMBER, AND ASSIGN IT THE CORRECT APPSINK
 
-	/*const gchar* pipeline_text = "videotestsrc ! video/x-raw,format=RGBA,width=1296,height=972 ! appsink name=left \
-								 videotestsrc pattern=ball ! video/x-raw,format=RGBA,width=1296,height=972 ! appsink name=sink_right";*/
-
-
-	pipeline = gst_parse_launch(pipeline_text, NULL);
+	pipeline = gst_parse_launch(rtsp_pipeline, NULL);
 
 	/* get sink */
 
@@ -188,11 +163,11 @@ void gstreamer_main()
 
 	/* Start playing */
 	gst_element_set_state(pipeline, GST_STATE_PLAYING);
-
+	
 	/* Wait until error or EOS */
 	bus = gst_element_get_bus(pipeline);
 	msg = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE, (GstMessageType)(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
-
+		
 	/* Free resources */
 	if (msg != NULL)
 		gst_message_unref(msg);

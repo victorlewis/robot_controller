@@ -1,4 +1,4 @@
-﻿Build started 6/27/2019 2:09:59 PM.
+﻿Build started 7/7/2019 11:01:30 PM.
      1>Project "C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\RobotController1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"C:\gstreamer\1.0\x86_64\\include\gstreamer-1.0" /I"C:\gstreamer\1.0\x86_64\\include\glib-2.0" /I"C:\gstreamer\1.0\x86_64\\lib\glib-2.0\include" /IC:\gstreamer\1.0\x86_64\\include /I\inc\crt\ /I\inc\atl71\ /IC:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\openvr\headers /I"C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\glew-1.13.0\include" /I"C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\glfw-3.2.bin.WIN64\include" /IC:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\asio /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt main.cpp
@@ -80,15 +80,15 @@
      1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1843): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
      1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1866): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
      1>c:\users\cameron\documents\virtualreality\robotcontroller1\robotcontroller1\openGLMeshes.h(1907): warning C4313: 'printf'  : '%i' in format string conflicts with argument 1 of type 'const char *'
-     1>main.cpp(151): warning C4305: '=' : truncation from 'double' to 'float'
-     1>main.cpp(152): warning C4305: '=' : truncation from 'double' to 'float'
-     1>main.cpp(157): warning C4305: 'initializing' : truncation from 'double' to 'float'
-     1>main.cpp(162): warning C4305: '=' : truncation from 'double' to 'float'
-     1>main.cpp(163): warning C4305: '=' : truncation from 'double' to 'float'
-     1>main.cpp(168): warning C4305: 'initializing' : truncation from 'double' to 'float'
-     1>main.cpp(216): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
-     1>main.cpp(217): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
-     1>main.cpp(314): warning C4805: '==' : unsafe mix of type 'int' and type 'bool' in operation
+     1>main.cpp(131): warning C4305: '=' : truncation from 'double' to 'float'
+     1>main.cpp(132): warning C4305: '=' : truncation from 'double' to 'float'
+     1>main.cpp(137): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>main.cpp(142): warning C4305: '=' : truncation from 'double' to 'float'
+     1>main.cpp(143): warning C4305: '=' : truncation from 'double' to 'float'
+     1>main.cpp(148): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>main.cpp(196): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
+     1>main.cpp(197): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
+     1>main.cpp(297): warning C4805: '==' : unsafe mix of type 'int' and type 'bool' in operation
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\x64\Release\RobotController1.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\gstreamer\1.0\x86_64\\lib /LIBPATH:C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\openvr\lib\win64 /LIBPATH:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\glfw-3.2.bin.WIN64\lib-vc2013" /LIBPATH:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\RobotController1\\thirdparty\glew-1.13.0\lib\Release\x64" glew32.lib glfw3.lib openvr_api.lib "gstapp-1.0.lib" oldnames.lib msvcrt.lib "gstreamer-1.0.lib" "gobject-2.0.lib" "glib-2.0.lib" intl.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\x64\Release\RobotController1.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Cameron\Documents\VirtualReality\RobotController1\x64\Release\RobotController1.lib" /MACHINE:X64 x64\Release\audiotest.obj
          x64\Release\main.obj
@@ -100,4 +100,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.66
+Time Elapsed 00:00:03.57
